@@ -1,0 +1,221 @@
+#define GO 0
+#define CHANGE_SIDE 1
+#define DO_NOT_CHANGE_SIDE 2
+
+task main()
+{
+	//light initialization
+	SetSensorLight(IN_1);
+	
+
+	///////////////////////constatnts//////////////////////////////
+	int target=48;
+	int P=20;
+	int spd = 25;
+	int kI=2;
+	int kD=0;
+	
+	//////////////////////////////////////////////////////////////
+	int integral=0;
+	int previous_error=0;
+
+	int state=0;
+	int licznik=0;
+	int turbo_przyspieszenie=0;
+	int blind=50;
+	int pom=1; //1 - follows right side
+			// -1 - follows left side
+	
+	////////////////////creating file///////////////////////////
+	byte fileHandle;
+	string write;
+	string tmp;
+	short bytesWritten;
+	//DeleteFile("plik.txt");
+	/*int ret = CreateFile("plik.txt", 10000, fileHandle);
+	if (ret != LDR_SUCCESS) Stop(true); */
+
+	//////////////////writing constants to file/////////////////
+	/*write="target: ";
+	tmp=NumToStr(target);
+	write=StrCat(write,tmp);
+	WriteLnString(fileHandle,write,bytesWritten);
+
+	write="speed: ";
+	tmp=NumToStr(spd);
+	write=StrCat(write,tmp);
+	WriteLnString(fileHandle,write,bytesWritten);	
+
+	write="P: ";
+	tmp=NumToStr(P);
+	write=StrCat(write,tmp);
+	WriteLnString(fileHandle,write,bytesWritten);
+
+	write="I: ";
+	tmp=NumToStr(kI);
+	write=StrCat(write,tmp);
+	WriteLnString(fileHandle,write,bytesWritten);
+
+	write="D: ";
+	tmp=NumToStr(kD);
+	write=StrCat(write,tmp);
+	WriteLnString(fileHandle,write,bytesWritten);*/
+
+
+	//int tab_errors[3]={0,0,0};
+	//int history=0;
+
+
+	//////////////////and finally following the line!////////////////////////////
+	//for(int i=0; i<5000; i++)
+	while(1)
+	{
+		int val = Sensor(IN_1);
+		int error=target-val;
+		int error2=abs(error);
+		//if (error2>5)
+		//{
+		integral=0.8*integral+error;
+		if(integral>40)
+			integral=40;
+		if(integral<-40)
+			integral=-40;
+		//}
+
+
+		/*history=history+error-tab_errors[0];
+		for (int i=0; i<2; i++)
+		{
+			tab_errors[i]=tab_errors[i+1];
+		}
+		tab_errors[2]=error;*/
+
+		
+
+
+		int derivative=error-previous_error;
+		previous_error=error;
+
+
+		int left=spd+pom*(error*P/10+kI*integral/100+kD*derivative/10+turbo_przyspieszenie);
+		int right=spd-pom*(error*P/10+kI*integral/100+kD*derivative/10+turbo_przyspieszenie);
+		
+		/*write=NumToStr(error);
+		WriteLnString(fileHandle,write,bytesWritten);*/
+
+		
+		
+
+
+		
+		if (state==GO)
+		{
+			if (blind>=0)
+				blind--;
+				
+			if (error<-10)
+			{
+				state=DO_NOT_CHANGE_SIDE;
+				turbo_przyspieszenie=0;
+			
+				OnRev(OUT_A,right);
+				OnRev(OUT_C,left);
+			}
+			
+			if (error>=14 && blind<0)
+			//if (history>=3*15)
+			{
+								
+				state=CHANGE_SIDE;
+				OnRev(OUT_AC,spd); 
+			}
+			else
+			{
+				OnRev(OUT_A,right);
+				OnRev(OUT_C,left);
+			}
+		}
+		
+		if (state==CHANGE_SIDE)
+		{
+			if (error<10)
+			//if(history<3*13)
+			{
+				state=GO;
+				pom*=(-1);
+				integral=0;
+				OnRev(OUT_A,left);
+				OnRev(OUT_C,right);
+				blind=20;
+			}
+			else
+			{
+				OnRev(OUT_AC,spd);
+				PlayTone(262,700);
+
+			}
+		}
+
+		if (state==DO_NOT_CHANGE_SIDE)
+		{
+			if(error>-9)
+			{
+				state=GO;
+				turbo_przyspieszenie=0;
+				integral=0;
+				OnRev(OUT_A,left);
+				OnRev(OUT_C,right);
+				blind=70;
+			}
+			else
+			{
+				OnRev(OUT_A,left);
+				OnRev(OUT_C,right);
+			}
+		}
+
+
+		
+	
+		Wait(1);
+	}
+	
+	Float(OUT_AC);
+	//////////////writing variables to file//////////////////////
+	/*for (int i=0; i<100; i++)
+	{	
+		if (i%500==0)
+			PlayTone(262,300);
+		tmp=NumToStr(tab[i][0]);
+		write=StrCat(tmp,"\t");
+		/*tmp=NumToStr(tab[i][1]);
+		write=StrCat(write,tmp,"\t");
+		tmp=NumToStr(tab[i][2]);
+		write=StrCat(write,tmp,"\t");
+		tmp=NumToStr(tab[i][3]);
+		write=StrCat(write,tmp,"\t");
+		tmp=NumToStr(tab[i][4]);
+		write=StrCat(write,tmp);
+		WriteLnString(fileHandle,write,bytesWritten);
+	}*/
+	//CloseFile(fileHandle);
+	//PlayTone(262,700);
+	//Wait(700);
+
+}
+	
+
+		
+/*	
+	
+
+	scan for NXT adress:
+nxtrc -s
+
+compile; delete old; write new:
+nbc -O=test.rxe test.nxc; nxtrc -a 00:16:53:03:27:97 -d test.rxe; nxtrc -a 00:16:53:03:27:97 -w test.rxe*/
+
+	
+
+//00:16:53:00:53:C2
+

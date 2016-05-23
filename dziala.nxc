@@ -1,0 +1,84 @@
+
+
+task main()
+{
+	//light initialization
+	SetSensorLight(IN_1);
+	
+	
+		/*OnRev(OUT_A,15);
+		OnRev(OUT_C,15);*/
+		
+		//Wait(1000);
+		
+	
+
+	while(1)
+	//for(int i=0; i<10; i++)
+	{
+		int P=30;
+		int val = Sensor(IN_1);
+		int target=44;
+		int spd = 50;
+		int error=target-val;
+		int error2;
+		
+		int left=spd+error*P/10;
+		int right=spd-error*P/10;
+		OnRev(OUT_A,right);
+		OnRev(OUT_C,left);
+		Wait(1);
+	}
+}
+	
+	/*while(1)
+	{
+		if (Sensor(IN_1) > 40) //szuka czarnego
+		{
+			OnFwdReg(OUT_AC, 75, OUT_REGMODE_SYNC);
+			Wait(10);
+		}
+		else
+		{
+			
+		}
+	}
+	
+	
+	while(1){
+		if (Sensor(IN_1) > 40) //bialy - 100
+		{
+			OnFwdReg(OUT_AC, 75, OUT_REGMODE_SYNC);
+			Wait(10);
+		}
+		else
+		{
+			OnRev(OUT_C, 75);
+			Wait(1000);
+		}
+	}
+}*/
+	
+	
+	
+	
+/*
+	OnFwd(OUT_AC, 75);
+	Wait(MOVE_TIME);
+
+	OnRev(OUT_C, 75);
+	Wait(TURN_TIME);
+
+	Off(OUT_AC);*/
+	
+	/*
+	scan for NXT adress:
+nxtrc -s
+
+compile; delete old; write new:
+nbc -O=test.rxe test.nxc; nxtrc -a 00:16:53:03:27:97 -d test.rxe; nxtrc -a 00:16:53:03:27:97 -w test.rxe*/
+
+	
+
+//00:16:53:00:53:C2
+
