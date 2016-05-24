@@ -1,4 +1,4 @@
-FILENAME=nowe
+FILENAME=nowe2
 ADDRESS=00:16:53:14:34:00
 
 all:
@@ -8,6 +8,8 @@ all:
 	sleep 1
 	nxtrc -a $(ADDRESS) -w $(FILENAME).rxe
 	sleep 1
+	echo -e "\a"
+
 
 run:
 	nxtrc -a $(ADDRESS) -p $(FILENAME).rxe

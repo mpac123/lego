@@ -35,7 +35,7 @@ task main()
             else
             {
                 left=30;
-                right=120;
+                right=127;
             }
         }
         else if (stan==JEDZIE_LEWO)
@@ -45,7 +45,7 @@ task main()
             else
             {
                 left=10;
-                right=120;
+                right=127;
             }
         }
         else if (stan==NIUCHA_PRAWO)
@@ -54,7 +54,7 @@ task main()
                 stan=JEDZIE_PRAWO;
             else
             {
-                left=120;
+                left=127;
                 right=30;
             }
         }
@@ -64,7 +64,7 @@ task main()
                 stan=NIUCHA_LEWO;
             else
             {
-                left=120;
+                left=127;
                 right=10;
             }
         }
