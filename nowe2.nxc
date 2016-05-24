@@ -1,0 +1,81 @@
+#define NIUCHA_PRAWO 0
+#define NIUCHA_LEWO 2
+#define JEDZIE_PRAWO 1
+#define JEDZIE_LEWO 3
+
+task main()
+{
+    //light initialization
+    SetSensorLight(IN_1);
+    
+    int white=65;
+    int black=40;
+    int target=(white+black)/2;
+    int left;
+    int right;
+    
+    int previous_val=Sensor(IN_1);
+    int pre_previous_val=Sensor(IN_1);
+    
+    int stan=NIUCHA_LEWO;
+    
+    
+    while(1)
+    {
+        int val = Sensor(IN_1);
+        
+        int derivative=val-pre_previous_val;
+        pre_previous_val=previous_val;
+        previous_val=val;
+    
+        if (stan==NIUCHA_LEWO)
+        {
+            if (derivative<-2)
+                stan=JEDZIE_LEWO;
+            else
+            {
+                left=30;
+                right=120;
+            }
+        }
+        else if (stan==JEDZIE_LEWO)
+        {
+            if (derivative>3)
+                stan=NIUCHA_PRAWO;
+            else
+            {
+                left=10;
+                right=120;
+            }
+        }
+        else if (stan==NIUCHA_PRAWO)
+        {
+            if (derivative<-2)
+                stan=JEDZIE_PRAWO;
+            else
+            {
+                left=120;
+                right=30;
+            }
+        }
+        else if (stan==JEDZIE_PRAWO)
+        {
+            if (derivative>3)
+                stan=NIUCHA_LEWO;
+            else
+            {
+                left=120;
+                right=10;
+            }
+        }
+        
+        
+        
+        
+        //int left=spd+(error*P/10+kI*integral/100+kD*derivative/10);
+        //int right=spd-(error*P/10+kI*integral/100+kD*derivative/10);
+        
+        OnRev(OUT_A,right);
+        OnRev(OUT_C,left);
+    }
+}
